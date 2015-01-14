@@ -66,7 +66,6 @@ TEST_F(TestUsage, try_ini) {
     tf.close();
     tf.remove ();
 
-
     PerSt * st = PerStFactory::create (PerStQSettings::INI, s_file);
     ASSERT_TRUE(st != NULL);
 
@@ -76,6 +75,18 @@ TEST_F(TestUsage, try_ini) {
     EXPECT_TRUE(st->beginGroup ("g1"));
     EXPECT_TRUE(st->setValue ("test1g1", "1"));
     EXPECT_TRUE(st->setValue ("test2g1", "2"));
+    EXPECT_TRUE(st->beginWriteArray ("a1"));
+        EXPECT_TRUE(st->setValue ("v", "a1v1"));
+        EXPECT_TRUE(st->setArrayIndex (1));
+        EXPECT_TRUE(st->setValue ("v", "a1v2"));
+        EXPECT_TRUE(st->setArrayIndex (2));
+        EXPECT_TRUE(st->setValue ("v", "a1v3"));
+        EXPECT_TRUE(st->setArrayIndex (3));
+        EXPECT_TRUE(st->setValue ("v", "a1v4"));
+        EXPECT_TRUE(st->beginWriteArray ("a1a1"));
+        EXPECT_TRUE(st->setValue ("v", "a1a1v1"));
+        EXPECT_TRUE(st->endArray ("a1a1"));
+    EXPECT_TRUE(st->endArray ("a1"));
     EXPECT_TRUE(st->endGroup ("g1"));
     EXPECT_TRUE(st->endGroup ("TOP"));
 
@@ -90,6 +101,18 @@ TEST_F(TestUsage, try_ini) {
     EXPECT_TRUE(st->beginGroup ("g1"));
     EXPECT_TRUE(st->valueS ("test1g1") == "1");
     EXPECT_TRUE(st->valueS ("test2g1") == "2");
+    EXPECT_EQ(st->beginReadArray ("a1"), 4);
+        EXPECT_TRUE(st->valueS ("v") == "a1v1");
+        EXPECT_TRUE(st->setArrayIndex (1));
+        EXPECT_TRUE(st->valueS ("v") == "a1v2");
+        EXPECT_TRUE(st->setArrayIndex (2));
+        EXPECT_TRUE(st->valueS ("v") == "a1v3");
+        EXPECT_TRUE(st->setArrayIndex (3));
+        EXPECT_TRUE(st->valueS ("v") == "a1v4");
+        EXPECT_EQ(st->beginReadArray ("a1a1"), 1);
+        EXPECT_TRUE(st->valueS ("v") == "a1a1v1");
+        EXPECT_TRUE(st->endArray ("a1a1"));
+    EXPECT_TRUE(st->endArray ("a1"));
     EXPECT_TRUE(st->endGroup ("g1"));
     EXPECT_TRUE(st->endGroup ("TOP"));
 
